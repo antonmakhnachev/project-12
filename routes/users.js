@@ -8,6 +8,7 @@ const sendUsersData = (req, res) => {
   fsPromises.readFile(usersDataPath, { encoding: 'utf8' })
     .then((usersData) => {
       res.send(JSON.parse(usersData));
+      // res.send(req.query);
     })
 
     .catch((err) => {
