@@ -1,0 +1,24 @@
+{
+  "name": "project-12",
+  "version": "1.0.0",
+  "description": "project-12_homework",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antonmakhnachev/project-12.git"
+  },
+  "author": "Anton Makhnachev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/antonmakhnachev/project-12/issues"
+  },
+  "homepage": "https://github.com/antonmakhnachev/project-12#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2"
+  }
+}
