@@ -1,20 +1,19 @@
-// const routerGetUsers = require('express').Router();
-const fsPromises = require('fs').promises;
-// const { users } = require('../data/users.json');
-const path = require('path');
+const routerUsers = require('express').Router();
 
-const sendUsersData = (req, res) => {
-  const usersDataPath = path.join(__dirname, '../data/users.json');
-  fsPromises.readFile(usersDataPath, { encoding: 'utf8' })
-    .then((usersData) => {
-      res.send(JSON.parse(usersData));
-      // res.send(req.query);
-    })
+const usersData = require('../data/users.json');
 
-    .catch((err) => {
-      res.send(`error ${err}`);
-      console.log(err);
-    });
-};
+routerUsers.get('/', (req, res) => {
+  res.send(usersData);
+});
 
-module.exports = sendUsersData;
+routerUsers.get('/:id', (req, res) => {
+  const user = usersData.find(user => req.params.id === user._id);
+  if (user) {
+    res.send(user);
+  } else {
+    res.status(400).send({ message: 'Нет пользователя с таким id' });
+  }
+  res.send(user);
+});
+
+module.exports = routerUsers;
