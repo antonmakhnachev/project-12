@@ -2,8 +2,6 @@ const routerUsers = require('express').Router();
 const fsPromises = require('fs').promises;
 const path = require('path');
 
-const usersData = require('../data/users.json');
-
 routerUsers.get('/', (req, res) => {
   fsPromises.readFile(path.join(__dirname, '../data/users.json'))
     .then((data) => {
