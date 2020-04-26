@@ -6,13 +6,13 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ massege: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ massege: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -21,7 +21,15 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(cardId)
     .orFail(() => { throw new Error(); })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ massege: 'Произошла ошибка' }));
+    .catch((err) => {
+      let status = 500;
+      let message = 'Произошла ошибка';
+      if (err.message.includes('Cast to ObjectId failed for value')) {
+        status = 404;
+        message = 'Карточка не найдена';
+      }
+      res.status(status).send(message);
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -30,7 +38,7 @@ module.exports.likeCard = (req, res) => {
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: userId } }, { new: true })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ massege: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -39,5 +47,5 @@ module.exports.dislikeCard = (req, res) => {
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ massege: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
