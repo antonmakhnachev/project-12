@@ -23,11 +23,11 @@ module.exports.getUser = (req, res) => {
     .catch((err) => {
       let status = 500;
       let message = 'Произошла ошибка';
-      if (err.message.includes('Cast to ObjectId failed for value')) {
+      if (err.name === 'CastError' || err.name === 'DocumentNotFoundError') {
         status = 404;
         message = 'Пользователь не найден';
       }
-      res.status(status).send(message);
+      res.status(status).send({ message });
     });
 };
 
@@ -40,11 +40,11 @@ module.exports.deleteUser = (req, res) => {
     .catch((err) => {
       let status = 500;
       let message = 'Произошла ошибка';
-      if (err.message.includes('Cast to ObjectId failed for value')) {
+      if (err.name === 'CastError' || err.name === 'DocumentNotFoundError') {
         status = 404;
         message = 'Пользователь не найден';
       }
-      res.status(status).send(message);
+      res.status(status).send({ message });
     });
 };
 

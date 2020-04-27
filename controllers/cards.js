@@ -24,11 +24,11 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => {
       let status = 500;
       let message = 'Произошла ошибка';
-      if (err.message.includes('Cast to ObjectId failed for value')) {
+      if (err.name === 'CastError' || err.name === 'DocumentNotFoundError') {
         status = 404;
         message = 'Карточка не найдена';
       }
-      res.status(status).send(message);
+      res.status(status).send({ message });
     });
 };
 
