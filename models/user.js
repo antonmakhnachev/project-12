@@ -23,6 +23,21 @@ const userSchema = new mongoose.Schema({
     },
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator(isEmail) {
+        return validator.isEmail(isEmail);
+      },
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+  },
 });
 
 module.exports = mongoose.model('user', userSchema);
