@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
@@ -40,6 +41,10 @@ module.exports.getUser = (req, res) => {
 module.exports.deleteUser = (req, res) => {
   const { userId } = req.params;
 
+  if (userId !== req.user._id) {
+    res.status(403).send({ massege: 'Недостаточно прав' });
+  }
+
   User.findByIdAndRemove(userId)
     .orFail()
     .then((user) => res.send({ data: user }))
@@ -70,4 +75,21 @@ module.exports.updateProfileAvatar = (req, res) => {
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ newAvatar: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+      });
+      res.end();
+    })
+    .catch((err) => {
+      res.status(401).send(err);
+    });
 };

@@ -22,6 +22,9 @@ module.exports.deleteCard = (req, res) => {
     .orFail()
     .then((card) => {
       if (card) {
+        if (card.owner !== req.user._id) {
+          res.status(403).send({ massege: 'Недостаточно прав' });
+        }
         res.send({ data: card });
       } else {
         res.status(404).send({ massege: 'Карточка не найдена' });
