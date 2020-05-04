@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
+const { JWT_SECRET_KEY } = process.env;
+
 module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
@@ -21,42 +23,26 @@ module.exports.getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
+
 module.exports.getUser = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .orFail()
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      let status = 500;
-      let message = 'Произошла ошибка';
-      if (err.name === 'CastError' || err.name === 'DocumentNotFoundError') {
-        status = 404;
-        message = 'Пользователь не найден';
-      }
-      res.status(status).send({ message });
-    });
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.deleteUser = (req, res) => {
   const { userId } = req.params;
 
-  if (userId !== req.user._id) {
-    res.status(403).send({ massege: 'Недостаточно прав' });
+  if (userId.toString() !== req.user._id) {
+    res.status(403).send({ message: 'Недостаточно прав' });
+    return;
   }
 
   User.findByIdAndRemove(userId)
-    .orFail()
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      let status = 500;
-      let message = 'Произошла ошибка';
-      if (err.name === 'CastError' || err.name === 'DocumentNotFoundError') {
-        status = 404;
-        message = 'Пользователь не найден';
-      }
-      res.status(status).send({ message });
-    });
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.updateProfile = (req, res) => {
@@ -82,14 +68,14 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '7d' });
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
       });
-      res.end();
+      res.send({ message: 'Авторизация прошла успешно' });
     })
     .catch((err) => {
-      res.status(401).send(err);
+      res.status(401).send({ message: err.message });
     });
 };

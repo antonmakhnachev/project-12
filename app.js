@@ -1,7 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
-const { PORT = 3000 } = process.env;
+const { PORT, SERVER_CONNECT } = process.env;
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect(SERVER_CONNECT, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
