@@ -32,18 +32,6 @@ module.exports.getUser = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports.deleteUser = (req, res) => {
-  const { userId } = req.params;
-
-  if (userId.toString() !== req.user._id) {
-    res.status(403).send({ message: 'Недостаточно прав' });
-    return;
-  }
-
-  User.findByIdAndRemove(userId)
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
-};
 
 module.exports.updateProfile = (req, res) => {
   const userId = req.user._id;
