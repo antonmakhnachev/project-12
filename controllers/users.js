@@ -64,6 +64,6 @@ module.exports.login = (req, res) => {
       res.send({ message: 'Авторизация прошла успешно' });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      res.status(err.statusCode || 500).send({ message: 'Что-то пошло не так', err: err.message });
     });
 };

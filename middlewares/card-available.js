@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
         res.status(404).send({ massege: 'Карточка не найдена' });
         return;
       }
-      if (card.owner.toString() !== req.user._id) {
+      if (!card.owner.equals(req.user._id)) {
         res.status(403).send({ message: 'Недостаточно прав' });
         return;
       }
