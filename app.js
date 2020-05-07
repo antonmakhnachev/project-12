@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
-const { PORT, SERVER_CONNECT } = process.env;
+const { PORT = 3000, SERVER_CONNECT = 'mongodb://localhost:27017/mestodb' } = process.env;
 
 const app = express();
 
