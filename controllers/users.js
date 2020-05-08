@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const NotFoundError = require('../errors/notFoundError');
+const { JWT_SECRET_KEY } = require('../config');
 
-const { NODE_ENV, JWT_SECRET_KEY } = process.env;
 
 module.exports.createUser = (req, res) => {
   const {
@@ -13,8 +14,15 @@ module.exports.createUser = (req, res) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
+    .then((user) => user.omitPrivate())
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.code === 11000) {
+        res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.getUsers = (req, res) => {
@@ -28,8 +36,9 @@ module.exports.getUser = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
+    .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: 'Произошла ошибка', err: err.message }));
 };
 
 
@@ -56,7 +65,7 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET_KEY : 'secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '7d' });
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,

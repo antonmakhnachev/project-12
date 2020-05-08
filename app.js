@@ -2,12 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
-const { PORT = 3000, SERVER_CONNECT = 'mongodb://localhost:27017/mestodb' } = process.env;
-
 const app = express();
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+
+const { PORT, SERVER_CONNECT } = require('./config');
 
 const routerUsers = require('./routes/users.js');
 const routerCards = require('./routes/cards.js');
@@ -22,6 +22,7 @@ mongoose.connect(SERVER_CONNECT, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
+  useUnifiedTopology: true,
 });
 
 app.use('/users', routerUsers);

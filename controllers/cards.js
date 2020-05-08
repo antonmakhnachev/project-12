@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/notFoundError');
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
@@ -20,7 +21,7 @@ module.exports.deleteCard = (req, res) => {
 
   Card.findByIdAndRemove(cardId)
     .then((card) => res.send({ message: 'Карточка удалена', data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: 'Произошла ошибка', err: err.message }));
 };
 
 module.exports.likeCard = (req, res) => {
@@ -28,8 +29,9 @@ module.exports.likeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: userId } }, { new: true })
+    .orFail(() => new NotFoundError('Карточка не найдена'))
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: 'Произошла ошибка', err: err.message }));
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -37,6 +39,7 @@ module.exports.dislikeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
+    .orFail(() => new NotFoundError('Карточка не найдена'))
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => res.status(err.statusCode || 500).send({ message: 'Произошла ошибка', err: err.message }));
 };

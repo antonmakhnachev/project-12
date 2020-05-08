@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const { NODE_ENV, JWT_SECRET_KEY } = process.env;
+const { JWT_SECRET_KEY } = require('../config');
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET_KEY : 'secret-key');
+    payload = jwt.verify(token, JWT_SECRET_KEY);
   } catch (err) {
     res.status(401).send({ message: 'Необходима авторизация' });
     return;
