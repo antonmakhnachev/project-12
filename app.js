@@ -9,8 +9,7 @@ const cookieParser = require('cookie-parser');
 
 const { PORT, SERVER_CONNECT } = require('./config');
 
-const routerUsers = require('./routes/users.js');
-const routerCards = require('./routes/cards.js');
+const routes = require('./routes/index');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,8 +24,10 @@ mongoose.connect(SERVER_CONNECT, {
   useUnifiedTopology: true,
 });
 
-app.use('/users', routerUsers);
-app.use('/cards', routerCards);
+app.use(routes);
+
+// app.use('/users', routerUsers);
+// app.use('/cards', routerCards);
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });

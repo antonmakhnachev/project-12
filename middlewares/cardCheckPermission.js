@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundError');
+const ForbiddenError = require('../errors/forbiddenError');
 
 module.exports = (req, res, next) => {
   const { cardId } = req.params;
@@ -8,10 +9,13 @@ module.exports = (req, res, next) => {
     .orFail(() => new NotFoundError('Карточка не найдена'))
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
-        res.status(403).send({ message: 'Недостаточно прав' });
-        return;
+        return Promise.reject(new ForbiddenError('Недостаточно прав'));
       }
-      next();
+      return next();
     })
-    .catch((err) => res.status(err.statusCode || 500).send({ message: 'Произошла ошибка', err: err.message }));
+    .catch((err) => {
+      const statusCode = err.statusCode || 500;
+      const message = statusCode === 500 ? 'Что-то пошло не так' : err.message;
+      res.status(statusCode).send({ message });
+    });
 };

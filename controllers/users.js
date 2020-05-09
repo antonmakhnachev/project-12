@@ -20,7 +20,7 @@ module.exports.createUser = (req, res) => {
       if (err.code === 11000) {
         res.status(409).send({ message: 'Пользователь с таким email уже существует' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'Что-то пошло не так' });
       }
     });
 };
@@ -28,7 +28,7 @@ module.exports.createUser = (req, res) => {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
 };
 
 
@@ -38,7 +38,11 @@ module.exports.getUser = (req, res) => {
   User.findById(userId)
     .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(err.statusCode || 500).send({ message: 'Произошла ошибка', err: err.message }));
+    .catch((err) => {
+      const statusCode = err.statusCode || 500;
+      const message = statusCode === 500 ? 'Что-то пошло не так' : err.message;
+      res.status(statusCode).send({ message });
+    });
 };
 
 
@@ -48,7 +52,7 @@ module.exports.updateProfile = (req, res) => {
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ newData: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
 };
 
 module.exports.updateProfileAvatar = (req, res) => {
@@ -57,7 +61,7 @@ module.exports.updateProfileAvatar = (req, res) => {
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ newAvatar: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
 };
 
 module.exports.login = (req, res) => {
@@ -73,6 +77,8 @@ module.exports.login = (req, res) => {
       res.send({ message: 'Авторизация прошла успешно' });
     })
     .catch((err) => {
-      res.status(err.statusCode || 500).send({ message: 'Что-то пошло не так', err: err.message });
+      const statusCode = err.statusCode || 500;
+      const message = statusCode === 500 ? 'Что-то пошло не так' : err.message;
+      res.status(statusCode).send({ message });
     });
 };
