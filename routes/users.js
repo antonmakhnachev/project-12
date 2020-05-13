@@ -1,32 +1,15 @@
 const routerUsers = require('express').Router();
-const fsPromises = require('fs').promises;
-const path = require('path');
+const auth = require('../middlewares/auth');
+const {
+  getUsers, getUser, updateProfile, updateProfileAvatar,
+} = require('../controllers/users');
 
-routerUsers.get('/', (req, res) => {
-  fsPromises.readFile(path.join(__dirname, '../data/users.json'))
-    .then((data) => {
-      res.send(JSON.parse(data));
-    })
 
-    .catch((err) => {
-      res.status(404).send({ massege: err });
-    });
-});
-
-routerUsers.get('/:id', (req, res) => {
-  fsPromises.readFile(path.join(__dirname, '../data/users.json'))
-    .then((data) => {
-      const user = JSON.parse(data).find(user => req.params.id === user._id);
-      if (user) {
-        res.send(user);
-      } else {
-        res.status(404).send({ message: 'Нет пользователя с таким id' });
-      };
-    })
-
-    .catch((err) => {
-      res.status(404).send({ massege: err });
-    });
-});
+// routerUsers.post('/signup', createUser);
+// routerUsers.post('/signin', login);
+routerUsers.get('/:userId', auth, getUser);
+routerUsers.get('/', auth, getUsers);
+routerUsers.patch('/me', auth, updateProfile);
+routerUsers.patch('/me/avatar', auth, updateProfileAvatar);
 
 module.exports = routerUsers;

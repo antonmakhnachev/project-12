@@ -1,16 +1,14 @@
 const routerCards = require('express').Router();
-const path = require('path');
-const fsPromises = require('fs').promises;
+const auth = require('../middlewares/auth');
+const cardCheckPermission = require('../middlewares/cardCheckPermission');
+const {
+  createCard, getCards, deleteCard, likeCard, dislikeCard,
+} = require('../controllers/cards');
 
-routerCards.get('/', (req, res) => {
-  fsPromises.readFile(path.join(__dirname, '../data/cards.json'), { encoding: 'utf8' })
-    .then((data) => {
-      res.send(JSON.parse(data));
-    })
-
-    .catch((err) => {
-      res.status(404).send({ message: err });
-    });
-});
+routerCards.post('/', auth, createCard);
+routerCards.get('/', auth, getCards);
+routerCards.delete('/:cardId', auth, cardCheckPermission, deleteCard);
+routerCards.put('/:cardId/likes', auth, likeCard);
+routerCards.delete('/:cardId/likes', auth, dislikeCard);
 
 module.exports = routerCards;
