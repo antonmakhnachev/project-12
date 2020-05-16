@@ -9,19 +9,7 @@ module.exports.validCreateCard = celebrate({
   }),
 });
 
-module.exports.validDeleteCard = celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().required().length(24),
-  }),
-});
-
-module.exports.validLikeCard = celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().required().length(24),
-  }),
-});
-
-module.exports.validDislikeCard = celebrate({
+module.exports.validGetCard = celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().required().length(24),
   }),
