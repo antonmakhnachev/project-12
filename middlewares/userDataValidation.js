@@ -21,17 +21,11 @@ module.exports.validUpdateProfile = celebrate({
     name: Joi.string().required().min(2).max(8),
     about: Joi.string().required().min(2).max(30),
   }),
-  user: Joi.object().keys({
-    _id: Joi.string().required().length(24),
-  }),
 });
 
 module.exports.validUpdateProfileAvatar = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().required().regex(/^(https?:\/\/)?([\w.]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?$/),
-  }),
-  user: Joi.object().keys({
-    _id: Joi.string().required().length(24),
   }),
 });
 
