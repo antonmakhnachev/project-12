@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 
 
 const app = express();
@@ -30,14 +31,15 @@ app.use(requestLogger);
 
 app.use(routes);
 
-app.use(errorLogger);
-
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
-// app.use(errors());
+
+app.use(errors());
+
+app.use(errorLogger);
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
