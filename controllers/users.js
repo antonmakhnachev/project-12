@@ -43,7 +43,7 @@ module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
-    .then((user) => res.send({ newData: user }))
+    .then((user) => res.send({ data: user }))
     .catch(next);
 };
 
@@ -52,7 +52,7 @@ module.exports.updateProfileAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
-    .then((user) => res.send({ newAvatar: user }))
+    .then((user) => res.send({ data: user }))
     .catch(next);
 };
 
