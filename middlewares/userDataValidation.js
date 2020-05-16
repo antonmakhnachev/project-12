@@ -1,11 +1,13 @@
+const regexUrl = new RegExp(/^(https?:\/\/)?([\w.]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?$/);
+const regexEmail = new RegExp(/^([a-z0-9_.-]+)@([a-z0-9_.-]+)\.([a-z.]{2,6})$/);
 const { celebrate, Joi } = require('celebrate');
 
 module.exports.validCreateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().regex(/^(https?:\/\/)?([\w.]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?$/),
-    email: Joi.string().required().regex(/^([a-z0-9_.-]+)@([a-z0-9_.-]+)\.([a-z.]{2,6})$/),
+    avatar: Joi.string().required().regex(regexUrl),
+    email: Joi.string().required().regex(regexEmail),
     password: Joi.string().required().min(8),
   }),
 });
@@ -25,13 +27,13 @@ module.exports.validUpdateProfile = celebrate({
 
 module.exports.validUpdateProfileAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().regex(/^(https?:\/\/)?([\w.]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?$/),
+    avatar: Joi.string().required().regex(regexUrl),
   }),
 });
 
 module.exports.validLogin = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().regex(/^([a-z0-9_.-]+)@([a-z0-9_.-]+)\.([a-z.]{2,6})$/),
+    email: Joi.string().required().regex(regexEmail),
     password: Joi.string().required().min(8),
   }),
 });

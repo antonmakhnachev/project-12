@@ -1,9 +1,11 @@
+const regexUrl = new RegExp(/^(https?:\/\/)?([\w.]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?$/);
 const { celebrate, Joi } = require('celebrate');
+
 
 module.exports.validCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().regex(/^(https?:\/\/)?([\w.]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?$/),
+    link: Joi.string().required().regex(regexUrl),
   }),
 });
 
