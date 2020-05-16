@@ -1,7 +1,7 @@
 {
-  "name": "project-12",
+  "name": "project-15",
   "version": "1.0.0",
-  "description": "project-12_homework",
+  "description": "project-15_homework",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -35,7 +35,6 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.10",
     "validator": "^13.0.0",
-    "webpack": "^4.42.1",
     "winston": "^3.2.1"
   }
 }
