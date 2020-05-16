@@ -26,11 +26,15 @@ mongoose.connect(SERVER_CONNECT, {
 
 app.use(routes);
 
-// app.use('/users', routerUsers);
-// app.use('/cards', routerCards);
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+});
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res.status(statusCode).send({ message: statusCode === 500 ? 'Что-то пошло не так' : message });
 });
 
 
