@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/notFoundError');
 const { JWT_SECRET_KEY } = require('../config');
 
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -16,55 +16,47 @@ module.exports.createUser = (req, res) => {
     }))
     .then((user) => user.omitPrivate())
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.code === 11000) {
-        res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-      } else {
-        res.status(500).send({ message: 'Что-то пошло не так' });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
+    .catch(next);
 };
 
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .orFail(() => new NotFoundError('Пользователь не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь не найден');
+    })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      const statusCode = err.statusCode || 500;
-      const message = statusCode === 500 ? 'Что-то пошло не так' : err.message;
-      res.status(statusCode).send({ message });
-    });
+    .catch(next);
 };
 
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const userId = req.user._id;
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
-    .then((user) => res.send({ newData: user }))
-    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
+    .then((user) => res.send({ data: user }))
+    .catch(next);
 };
 
-module.exports.updateProfileAvatar = (req, res) => {
+module.exports.updateProfileAvatar = (req, res, next) => {
   const userId = req.user._id;
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
-    .then((user) => res.send({ newAvatar: user }))
-    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
+    .then((user) => res.send({ data: user }))
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -76,9 +68,5 @@ module.exports.login = (req, res) => {
       });
       res.send({ message: 'Авторизация прошла успешно' });
     })
-    .catch((err) => {
-      const statusCode = err.statusCode || 500;
-      const message = statusCode === 500 ? 'Что-то пошло не так' : err.message;
-      res.status(statusCode).send({ message });
-    });
+    .catch(next);
 };
